@@ -1,0 +1,38 @@
+name: Build Freifunk Firmware
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "The used Freifunk repository"
+        required: true
+        default: "https://github.com/RolandoMagico/gluon.git"
+      branch:
+        description: "Branch oder Tag in the Freifunk repository"
+        required: false
+        default: "main"
+      target:
+        description: "The target to build for"
+        required: true
+        default: "mediatek-mt7622"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: APT Update
+        run: sudo apt update
+      - name: Install build tools
+        run: sudo apt install -y git build-essential subversion gawk unzip libncurses5-dev zlib1g-dev libssl-dev wget python3 rsync file
+      - name: Clone Freifunk Gluon Repository
+        run: git clone ${{ github.event.inputs.repository }} -b ${{ github.event.inputs.branch }}
+      - name: Build Firmware Image
+        working-directory: gluon
+        run: make GLUON_TARGETS=${{ github.event.inputs.target }}
+      - name: Archive build output
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-images
+          path: gluon/output/images/
