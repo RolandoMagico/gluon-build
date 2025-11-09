@@ -10,7 +10,7 @@ on:
       branch:
         description: "Branch oder Tag in the Freifunk repository"
         required: false
-        default: "main"
+        default: "R32-Test"
       target:
         description: "The target to build for"
         required: true
@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware-images
-          path: site-ffrgb/output/images/
+          path: site-ffrgb/output/
